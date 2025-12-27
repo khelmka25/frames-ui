@@ -6,42 +6,6 @@
 
 using namespace frames;
 
-void Context::beginPoints() {
-  beginPrimitive(PrimitiveType::kPoints);
-}
-
-void Context::endPoints() {
-  endPrimitive();
-}
-
-void Context::beginTriangles() {
-  beginPrimitive(PrimitiveType::kTriangles);
-}
-
-void Context::endTriangles() {
-  endPrimitive();
-}
-
-void Context::beginLines() {
-  beginPrimitive(PrimitiveType::kLines);
-}
-
-void Context::endLines() {
-  endPrimitive();
-}
-
-void Context::beginPrimitive(PrimitiveType primitiveType) {
-  DrawCommand command;
-  command.primitive = primitiveType;
-  command.indexStart = currentIndex;
-  commands.push_back(command);
-}
-
-void Context::endPrimitive() {
-  auto& command = commands.back();
-  command.indexEnd = currentIndex;
-}
-
 void Context::drawRect(vec2f tl, vec2f br) {
   constructRect(tl, br);
 }

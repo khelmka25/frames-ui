@@ -10,9 +10,11 @@
 
 namespace frames {
 // Graphics Context
-class Context : protected DrawList {
+class Context : public DrawList {
  public:
-  Context() = default;
+  explicit Context() : DrawList() {
+    
+  }
 
  public:
   // draw the following objects
@@ -35,22 +37,6 @@ class Context : protected DrawList {
   void drawCharacter(vec2f pos, char c);
   void drawString(vec2f pos, std::string_view text);
   void drawStringWrapped(vec2f pos, std::string_view text, float width);
-
- protected:
-  std::vector<DrawCommand> commands;
-
- public:
-  void beginPoints();
-  void endPoints();
-
-  void beginTriangles();
-  void endTriangles();
-
-  void beginLines();
-  void endLines();
-
-  void beginPrimitive(PrimitiveType type);
-  void endPrimitive();
 
  public:
   // current font descriptor

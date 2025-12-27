@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "frames/Graphics/Primitives/Rectangle.h"
+
 namespace frames {
 class FontDescriptor {
  public:

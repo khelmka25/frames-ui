@@ -4,5 +4,7 @@
 
 struct DrawCommand {
   PrimitiveType primitive;
-  unsigned int indexStart, indexEnd;
+  struct Range {
+    unsigned begin, end;
+  } vertices, indices;
 };

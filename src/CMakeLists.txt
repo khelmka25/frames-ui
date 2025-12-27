@@ -6,5 +6,9 @@ add_library(frames STATIC ${FRAMES_SOURCE})
 # add the header files
 target_include_directories(frames 
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/include/
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/deps/glfw/include
+  ${CMAKE_SOURCE_DIR}/deps/glad/include
 )
+
+target_compile_options(frames PUBLIC -g)
