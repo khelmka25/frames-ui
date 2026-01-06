@@ -9,6 +9,7 @@ target_include_directories(frames
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/deps/glfw/include
   ${CMAKE_SOURCE_DIR}/deps/glad/include
+  ${CMAKE_SOURCE_DIR}/deps/glm/
 )
 
 target_compile_options(frames PUBLIC -g)

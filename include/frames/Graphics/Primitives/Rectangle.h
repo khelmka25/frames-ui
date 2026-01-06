@@ -9,13 +9,13 @@ struct Rectangle {
   float width, height;
 
  public:
-  vec2f topleft() const noexcept { return origin; }
-  vec2f topright() const noexcept { return vec2f{origin.x + width, origin.y}; }
+  vec2f bottomleft() const noexcept { return origin; }
+  vec2f bottomright() const noexcept { return vec2f{origin.x + width, origin.y}; }
 
-  vec2f bottomright() const noexcept {
+  vec2f topright() const noexcept {
     return vec2f{origin.x + width, origin.y + height};
   }
-  vec2f bottomleft() const noexcept {
+  vec2f topleft() const noexcept {
     return vec2f{origin.x, origin.y + height};
   }
 
@@ -27,14 +27,43 @@ struct Rectangle {
   }
 
   vec2f top() const noexcept {
-    return vec2f{origin.x + width / 2.0f, origin.y};
+    return vec2f{origin.x + width / 2.0f, origin.y + height};
   }
   vec2f bottom() const noexcept {
-    return vec2f{origin.x + width / 2.0f, origin.y + height};
+    return vec2f{origin.x + width / 2.0f, origin.y};
   }
 
   vec2f center() const noexcept {
     return vec2f{origin.x + width / 2.0f, origin.y + height / 2.0f};
   }
+
+ public:
+  // vec2f topleft() const noexcept { return origin; }
+  // vec2f topright() const noexcept { return vec2f{origin.x + width, origin.y}; }
+
+  // vec2f bottomright() const noexcept {
+  //   return vec2f{origin.x + width, origin.y + height};
+  // }
+  // vec2f bottomleft() const noexcept {
+  //   return vec2f{origin.x, origin.y + height};
+  // }
+
+  // vec2f left() const noexcept {
+  //   return vec2f{origin.x, origin.y + height / 2.0f};
+  // }
+  // vec2f right() const noexcept {
+  //   return vec2f{origin.x + width, origin.y + height / 2.0f};
+  // }
+
+  // vec2f top() const noexcept {
+  //   return vec2f{origin.x + width / 2.0f, origin.y};
+  // }
+  // vec2f bottom() const noexcept {
+  //   return vec2f{origin.x + width / 2.0f, origin.y + height};
+  // }
+
+  // vec2f center() const noexcept {
+  //   return vec2f{origin.x + width / 2.0f, origin.y + height / 2.0f};
+  // }
 };
 }  // namespace frames

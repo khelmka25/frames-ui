@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <utility>
+#include <glm/glm.hpp>
 
 using namespace frames;
 
@@ -84,38 +85,58 @@ void RendererOpenGL::draw(Context* ctx) noexcept(false) {
   // 	const void * indices);
 
   shader.enable();
+  recomputeViewport({640.f, 360.f});
 
   glBindVertexArray(vertexArrayHandle);
 
   // context: iterate through all of the draw commands
   for (std::size_t i{}; i < ctx->commands.size(); i++) {
     const auto& cmd = ctx->commands.at(i);
-    const unsigned mode = [](PrimitiveType type) {
-      switch (type) {
-        default:
-        case PrimitiveType::kNone: {
-          throw std::runtime_error("Invalid Primitive Type");
-        }
-        case PrimitiveType::kPoints: {
-          return GL_POINTS;
-        }
-        case PrimitiveType::kLines: {
-          return GL_LINES;
-        }
-        case PrimitiveType::kTriangles: {
-          return GL_TRIANGLES;
-        }
-      }
-    }(cmd.primitive);
-    const unsigned count = (cmd.indices.end - cmd.indices.begin);
     // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
-    glDrawElements(mode, count, GL_UNSIGNED_INT, (void*)(cmd.indices.begin * sizeof(unsigned)));
+    const unsigned count = (cmd.indices.end - cmd.indices.begin);
+    GLenum const type = GL_UNSIGNED_INT;
+    const unsigned offset = cmd.indices.begin;
+    void* const indices = (void*)(offset * sizeof(unsigned));
+    // different actions based on command
+    switch (cmd.action) {
+      case Action::kNone: {
+        break;
+      }
+      case Action::kSwapPrimitivePoints: {
+        glDrawElements(GL_POINTS, count, GL_UNSIGNED_INT, indices);
+        break;
+      }
+      case Action::kSwapPrimitiveLines: {
+        glDrawElements(GL_LINES, count, GL_UNSIGNED_INT, indices);
+        break;
+      }
+      case Action::kSwapPrimitiveTriangles: {
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, indices);
+        break;
+      }
+      case Action::kSwapTexture: {
+        shader.setInt("sprite_sheet", cmd.texture);
+        break;
+      }
+    }
   }
 
+  shader.disable();
   glBindVertexArray(0u);
 
   glfwSwapBuffers(contextOpenGL.window);
   glfwPollEvents();
+}
+
+void frames::RendererOpenGL::recomputeViewport(vec2f size) {
+  // recompute the translation and the scaling matrix
+  glm::mat4 I(1);
+  // scale from [-1, 1] to [0, size]
+  I = glm::scale(I, glm::vec3{2.f / size.x, 2.f / size.y, 0.f});
+  // translate from [0, size] to [-size/2, size/2]
+  I = glm::translate(I, glm::vec3{-size.x / 2.f, -size.y / 2.f, 0.f});
+
+  shader.setMat4("projection"sv, I);
 }
 
 bool frames::RendererOpenGL::isOpen() noexcept {

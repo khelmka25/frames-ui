@@ -15,7 +15,5 @@ struct Color {
 
   Color(float red, float green, float blue, float alpha)
       : r(red), g(green), b(blue), a(alpha) {}
-
-  operator std::uint32_t() { return Color::toU32(*this); }
 };
 }  // namespace frames

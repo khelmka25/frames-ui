@@ -45,7 +45,5 @@ class Context : public DrawList {
   void pushFont();
   void popFont();
 
-  void pushTexture();
-  void popTexture();
 };
 }  // namespace frames

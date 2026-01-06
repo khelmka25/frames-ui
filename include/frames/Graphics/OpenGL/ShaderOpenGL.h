@@ -2,6 +2,13 @@
 
 #include <string_view>
 #include <filesystem>
+#include <unordered_map>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace frames {
 
@@ -18,12 +25,18 @@ class ShaderOpenGL {
   void enable();
   void disable();
 
-  void setBool(const std::string& name, bool value) const;
-  void setInt(const std::string& name, int value) const;
-  void setFloat(const std::string& name, float value) const;
+  void setBool(const std::string_view name, bool value) const;
+  void setInt(const std::string_view name, int value) const;
+  void setFloat(const std::string_view name, float value) const;
+  void setMat4(const std::string_view name, glm::mat4 value) const;
+
+  void registerUniform(const std::string_view name);
+  void unregisterUniform(const std::string_view name);
 
  private:
   unsigned int shaderProgramHandle, vertexShaderHandle, fragmentShaderHandle;
+  // map uniform names to their locations
+  std::unordered_map<std::string_view, int> uniformLocations;
 };
 
 };  // namespace frames

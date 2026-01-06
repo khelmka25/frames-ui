@@ -19,9 +19,9 @@ class RendererOpenGL {
  public:
   virtual void build(Context* ctx);
   virtual void draw(Context* ctx) noexcept(false);
+  virtual void recomputeViewport(vec2f size);
   virtual bool isOpen() noexcept;
 
- protected:
   ContextOpenGL contextOpenGL;
   ShaderOpenGL shader;
 

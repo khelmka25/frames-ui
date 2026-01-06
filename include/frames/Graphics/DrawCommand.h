@@ -2,9 +2,20 @@
 
 #include "frames/Graphics/Primitives/Primitive.h"
 
+namespace frames {
+enum class Action : unsigned {
+  kNone,
+  kSwapPrimitivePoints,
+  kSwapPrimitiveLines,
+  kSwapPrimitiveTriangles,
+  kSwapTexture,
+};
+
 struct DrawCommand {
-  PrimitiveType primitive;
-  struct Range {
+  Action action;
+  unsigned texture;
+  struct ElementRange {
     unsigned begin, end;
   } vertices, indices;
 };
+}  // namespace frames

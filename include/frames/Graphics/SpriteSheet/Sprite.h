@@ -5,6 +5,6 @@
 namespace frames {
 struct Sprite {
  public:
-  Rectangle uvRectangle;
+  Rectangle uv;
 };
 }  // namespace frames

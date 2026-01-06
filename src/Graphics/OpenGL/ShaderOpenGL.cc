@@ -8,7 +8,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 using namespace std::literals::string_view_literals;
 
 using namespace frames;
@@ -20,7 +19,8 @@ ShaderOpenGL::ShaderOpenGL(std::filesystem::path vertexPath,
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml
   vertexShaderHandle = glCreateShader(GL_VERTEX_SHADER);
 
-  std::string vertexShaderSource = ShaderOpenGL::loadShaderCode(vertexPath.string());
+  std::string vertexShaderSource =
+      ShaderOpenGL::loadShaderCode(vertexPath.string());
   const char* vertexShaderSourcePtr = vertexShaderSource.c_str();
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml
@@ -43,7 +43,8 @@ ShaderOpenGL::ShaderOpenGL(std::filesystem::path vertexPath,
 
   fragmentShaderHandle = glCreateShader(GL_FRAGMENT_SHADER);
 
-  std::string fragmentShaderSource = ShaderOpenGL::loadShaderCode(fragmentPath.string());
+  std::string fragmentShaderSource =
+      ShaderOpenGL::loadShaderCode(fragmentPath.string());
   const char* fragmentShaderSourcePtr = fragmentShaderSource.c_str();
 
   glShaderSource(fragmentShaderHandle, 1, &fragmentShaderSourcePtr, nullptr);
@@ -92,8 +93,7 @@ ShaderOpenGL::~ShaderOpenGL() {
   glDeleteProgram(shaderProgramHandle);
 }
 
-std::string ShaderOpenGL::loadShaderCode(std::string path) noexcept(
-    false) {
+std::string ShaderOpenGL::loadShaderCode(std::string path) noexcept(false) {
   std::ifstream sourceCodeFile(path);
   if (sourceCodeFile.fail()) {
     std::cout << "Failed to open " << std::quoted(path) << std::endl;
@@ -120,16 +120,58 @@ GLuint ShaderOpenGL::getProgramHandle(void) {
   return shaderProgramHandle;
 }
 
-/// Might use these later alter the generated triangles' colors
-void ShaderOpenGL::setBool(const std::string& name, bool value) const {
-  glUniform1i(glGetUniformLocation(shaderProgramHandle, name.c_str()),
-              static_cast<int>(value));
+void ShaderOpenGL::setBool(const std::string_view name, bool value) const {
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    const auto& location = uniformLocations.at(name);
+    glUniform1i(location, static_cast<int>(value));
+  }
 }
 
-void ShaderOpenGL::setInt(const std::string& name, int value) const {
-  glUniform1i(glGetUniformLocation(shaderProgramHandle, name.c_str()), value);
+void ShaderOpenGL::setInt(const std::string_view name, int value) const {
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    const auto& location = uniformLocations.at(name);
+    glUniform1i(location, value);
+  }
 }
 
-void ShaderOpenGL::setFloat(const std::string& name, float value) const {
-  glUniform1f(glGetUniformLocation(shaderProgramHandle, name.c_str()), value);
+void ShaderOpenGL::setFloat(const std::string_view name, float value) const {
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    const auto& location = uniformLocations.at(name);
+    glUniform1f(location, value);
+  }
+}
+
+void ShaderOpenGL::setMat4(const std::string_view name,
+                           glm::mat4 value) const {
+  // void glUniformMatrix4fv( 	GLint location,
+  // GLsizei count,
+  // GLboolean transpose,
+  // const GLfloat *value);
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    const auto& location = uniformLocations.at(name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+  }
+}
+
+void frames::ShaderOpenGL::registerUniform(const std::string_view name) noexcept(false) {
+  // ensure the uniform is created only once
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    throw std::runtime_error("This uniform already exists");
+  }
+  // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetUniformLocation.xhtml
+  auto location = glGetUniformLocation(getProgramHandle(), name.data());
+  if (location != -1) {
+    uniformLocations.insert({name, location});
+  } else {
+    std::cout << "name: " << name << " does not exist" << std::endl;
+    throw std::runtime_error("This uniform does not exist");
+  }
+}
+
+void ShaderOpenGL::unregisterUniform(const std::string_view name) {
+  if (uniformLocations.find(name) != uniformLocations.end()) {
+    uniformLocations.erase(name);
+  } else {
+    throw std::runtime_error("This uniform is not currently registered");
+  }
 }

@@ -1,8 +1,9 @@
 #include "frames/Graphics/Context.h"
-#include "frames/Graphics/Primitives/Rectangle.h"
 
 #include <stdexcept>
 #include <utility>
+
+#include "frames/Graphics/Primitives/Rectangle.h"
 
 using namespace frames;
 
@@ -60,7 +61,6 @@ void Context::drawCharacter(vec2f pos, char c) {
   // UV coordinates of character texture
   Rectangle uv = descriptor->getCharactureUv();
   // Construct a textured rect
-  
 }
 
 void Context::drawString(vec2f pos, std::string_view str) {
@@ -75,3 +75,4 @@ void Context::drawString(vec2f pos, std::string_view str) {
 void Context::drawStringWrapped(vec2f pos, std::string_view text, float width) {
   throw std::runtime_error("Not implemented");
 }
+
