@@ -5,6 +5,7 @@
 namespace frames {
 struct Sprite {
  public:
+  Sprite() = default;
   Rectangle uv;
 };
 }  // namespace frames

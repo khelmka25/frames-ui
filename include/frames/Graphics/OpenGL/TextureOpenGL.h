@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "frames/Graphics/Texture/TextureDescriptor.h"
+
 namespace frames {
 struct TextureOpenGL {
   TextureOpenGL(unsigned t_width, unsigned t_height, unsigned t_channels, char* data)
@@ -18,6 +20,17 @@ struct TextureOpenGL {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
+  }
+
+  TextureDescriptor getTextureDescriptor() const noexcept {
+    TextureDescriptor out;
+    out.width = width;
+    out.height = height;
+    return out;
+  }
+
+  ~TextureOpenGL() noexcept {
+    glDeleteTextures(1, &nativeTextureHandle);
   }
 
   auto getNativeHandle() const noexcept -> unsigned {

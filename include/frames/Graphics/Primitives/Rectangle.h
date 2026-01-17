@@ -5,6 +5,8 @@
 namespace frames {
 struct Rectangle {
  public:
+  Rectangle() : origin(0.f, 0.f), width(1.f), height(1.f) {}
+
   vec2f origin;
   float width, height;
 

@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <utility>
 
 #include "frames/Graphics/OpenGL/ShaderOpenGL.h"
 
@@ -120,40 +121,44 @@ GLuint ShaderOpenGL::getProgramHandle(void) {
   return shaderProgramHandle;
 }
 
-void ShaderOpenGL::setBool(const std::string_view name, bool value) const {
+int ShaderOpenGL::findUniformLocation(std::string_view name) {
+  // try to find the uniform in the map
   if (uniformLocations.find(name) != uniformLocations.end()) {
-    const auto& location = uniformLocations.at(name);
-    glUniform1i(location, static_cast<int>(value));
+    const auto location = uniformLocations.at(name);
+    return location;
   }
+  auto const location =
+      glGetUniformLocation(this->shaderProgramHandle, name.data());
+  uniformLocations.insert({name, location});
+  return location;
 }
 
-void ShaderOpenGL::setInt(const std::string_view name, int value) const {
-  if (uniformLocations.find(name) != uniformLocations.end()) {
-    const auto& location = uniformLocations.at(name);
-    glUniform1i(location, value);
-  }
+void ShaderOpenGL::setBool(const std::string_view name, bool value) {
+  const auto location = findUniformLocation(name);
+  glUniform1i(location, static_cast<int>(value));
 }
 
-void ShaderOpenGL::setFloat(const std::string_view name, float value) const {
-  if (uniformLocations.find(name) != uniformLocations.end()) {
-    const auto& location = uniformLocations.at(name);
-    glUniform1f(location, value);
-  }
+void ShaderOpenGL::setInt(const std::string_view name, int value) {
+  const auto location = findUniformLocation(name);
+  glUniform1i(location, value);
 }
 
-void ShaderOpenGL::setMat4(const std::string_view name,
-                           glm::mat4 value) const {
+void ShaderOpenGL::setFloat(const std::string_view name, float value) {
+  const auto location = findUniformLocation(name);
+  glUniform1f(location, value);
+}
+
+void ShaderOpenGL::setMat4(const std::string_view name, glm::mat4 value) {
   // void glUniformMatrix4fv( 	GLint location,
   // GLsizei count,
   // GLboolean transpose,
   // const GLfloat *value);
-  if (uniformLocations.find(name) != uniformLocations.end()) {
-    const auto& location = uniformLocations.at(name);
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-  }
+  const auto location = findUniformLocation(name);
+  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void frames::ShaderOpenGL::registerUniform(const std::string_view name) noexcept(false) {
+void frames::ShaderOpenGL::registerUniform(
+    const std::string_view name) noexcept(false) {
   // ensure the uniform is created only once
   if (uniformLocations.find(name) != uniformLocations.end()) {
     throw std::runtime_error("This uniform already exists");
